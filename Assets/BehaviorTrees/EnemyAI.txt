@@ -1,0 +1,5 @@
+tree("Root")
+	Succeed
+tree("Patrol")
+	sequence
+tree("Fight")
