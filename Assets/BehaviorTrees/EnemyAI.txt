@@ -1,5 +1,28 @@
 tree("Root")
-	Succeed
+		fallback		
+			tree("Fight")
+			tree("Patrol")
+	
 tree("Patrol")
-	sequence
+	while
+		sequence
+			not
+				isSeePlayer
+		sequence
+			StartPatrol	
+			repeat
+				sequence
+					isPatroller
+					SetWayPoint
+					MoveToNextWayPoint
+					Wait(0.3)
+					SetIndex
 tree("Fight")
+	sequence
+		isAlive
+		isSeePlayer
+		Wait(0.6)
+		parallel
+			MoveToEnemy
+			repeat
+				Attack

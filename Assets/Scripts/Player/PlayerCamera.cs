@@ -62,10 +62,24 @@ public class PlayerCamera : MonoBehaviour
     public void InteractWithObject()
     {
         Physics.Raycast(transform.position, transform.forward, out RaycastHit raycast, maxDistanceReach);
-        Debug.Log(raycast.transform.name);
+        
+        try
+        {
         var interactable = raycast.transform.gameObject.GetComponent<IInteractable>() ?? raycast.transform.gameObject.GetComponentInParent<IInteractable>();
-        try { player.Interact(interactable); }
+        player.Interact(interactable);
+        }
         catch { Debug.Log("Not Interactable"); }
+    }
+    public void MeleeAttack() 
+    {
+        Physics.Raycast(transform.position, transform.forward, out RaycastHit raycast, maxDistanceReach);
+
+        try
+        {
+            var hitable = raycast.transform.gameObject.GetComponent<IHitable>() ?? raycast.transform.gameObject.GetComponentInParent<IHitable>();
+            hitable.GetHit(player.meleeDamage);
+        }
+        catch { Debug.Log("Not Hitable"); }
     }
     
 }
