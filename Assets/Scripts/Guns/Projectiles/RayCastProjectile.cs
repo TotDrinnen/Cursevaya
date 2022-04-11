@@ -5,6 +5,7 @@ using UnityEngine;
 public class RayCastProjectile : MonoBehaviour,IPoolable
 {   private float damage;
     
+    
     public HitMarker hitMarker;
     public void RequestFromPool()
     {
@@ -29,9 +30,17 @@ public class RayCastProjectile : MonoBehaviour,IPoolable
     }
     public void Hit(RaycastHit hit)
     {
-        var hitobject = hit.transform.gameObject.GetComponent<IHitable>() ?? hit.transform.gameObject.GetComponentInParent<IHitable>();
-        hitobject.GetHit(damage);
-        hitMarker.transform.position = hit.transform.position;
-        hitMarker.gameObject.SetActive(true);
+        try
+        {
+            var hitobject = hit.transform.gameObject.GetComponent<IHitable>() ?? hit.transform.gameObject.GetComponentInParent<IHitable>();
+            hitobject.GetHit(damage);
+            hitMarker.transform.position = hit.point;
+            hitMarker.gameObject.SetActive(true);
+            //hit.rigidbody.AddForceAtPosition(transform.rotation.eulerAngles * damage, hit.point);
+            //this.ReturnToPool();
+            
+        }
+        catch { Debug.Log("NotHitable"); }
     }
+   
 }

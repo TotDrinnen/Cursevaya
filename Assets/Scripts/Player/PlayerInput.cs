@@ -15,25 +15,28 @@ public class PlayerInput : MonoBehaviour
     public event AxisHandler OnVerticalAxis;
     public event AxisHandler OnVerticalMouseAxis;
     public event AxisHandler OnHorizontalMouseAxis;
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    private bool inMenu;
+    public void SetInMenu(bool value) { inMenu = value; }
     void Update()
     {
-        OnHorizontalAxis?.Invoke(Input.GetAxis("Horizontal"));
-        OnVerticalAxis?.Invoke(Input.GetAxis("Vertical"));
-        OnHorizontalMouseAxis?.Invoke(Input.GetAxis("Mouse X"));
-        OnVerticalMouseAxis?.Invoke(Input.GetAxis("Mouse Y"));
-        if (Input.GetButtonDown("Interact")) playerCamera.InteractWithObject();
-        if (Input.GetButtonDown("Fire1")) player.currentGun.Shoot();
-        
-        if (Input.GetButton("Jump")) playerMovement.Jump();
+        if (player.isAlive&&!inMenu)
+        {
+            OnHorizontalAxis?.Invoke(Input.GetAxis("Horizontal"));
+            OnVerticalAxis?.Invoke(Input.GetAxis("Vertical"));
+            OnHorizontalMouseAxis?.Invoke(Input.GetAxis("Mouse X"));
+            OnVerticalMouseAxis?.Invoke(Input.GetAxis("Mouse Y"));
+            if (Input.GetButtonDown("Interact")) playerCamera.InteractWithObject();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                try {
+                    player.currentGun.SetHold(true);
+                    player.currentGun.Shoot(); }
+                catch { player.MeleeAttack(); }
+            }
+            if (Input.GetButtonUp("Fire1")) player.currentGun.StopShootingCoroutine();
+                if (Input.GetButtonDown("Jump")) playerMovement.Jump();
+            if (Input.GetButtonDown("Crouch")) playerMovement.SetCrouch();
+        }
     }
     
 }

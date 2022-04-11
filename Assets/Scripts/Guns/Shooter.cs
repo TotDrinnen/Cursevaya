@@ -7,10 +7,10 @@ public class Shooter : MonoBehaviour
     [SerializeField]
     private Gun gun;
     private int ammo;
- //   [SerializeField]
- //   private float heroAccuracy;
- //   [SerializeField]
- //   private float nonHeroAccuracy;
+    [SerializeField]
+    private float heroAccuracy;
+    [SerializeField]
+    private float nonHeroAccuracy;
     [SerializeField]
     private ObjectPool<RayCastProjectile> projectilePool;
     [SerializeField]
@@ -19,7 +19,9 @@ public class Shooter : MonoBehaviour
     private GameObject projectilePrefab;
     [SerializeField]
     private float reloadTime;
-
+    [SerializeField]
+    private int bulletsPerShoot=1;
+    private Vector3 bulletspread;
 
     // Start is called before the first frame update
     void Start()
@@ -42,15 +44,19 @@ public class Shooter : MonoBehaviour
         {
 
             ammo--;
-            //float accuracy = isPlayershoot ? heroAccuracy : nonHeroAccuracy;
+            float accuracy = isPlayershoot ? heroAccuracy : nonHeroAccuracy;
             // Vector3 shootRandom = Random.insideUnitCircle * accuracy;
-            
-            var projectile = projectilePool.GetObjectFromPool();
-            projectile.gameObject.transform.position = transform.position;
-            projectile.gameObject.transform.rotation = transform.rotation;
-            projectile.setDamage(damage);
-            projectile.Launch();
+            for (int i =0;i<bulletsPerShoot;i++) 
+            {
+                bulletspread = Random.insideUnitCircle*accuracy;
+                var projectile = projectilePool.GetObjectFromPool();
+                projectile.gameObject.transform.position = transform.position+bulletspread;
+                projectile.gameObject.transform.rotation = transform.rotation;
+                projectile.setDamage(damage);
+                projectile.Launch();
+                projectilePool.ReturnObjectToPool(projectile);
 
+            }
         }
         else {
             if (isPlayershoot) gun.Drop();
@@ -62,10 +68,12 @@ public class Shooter : MonoBehaviour
     public void Reload()
     {
         StartCoroutine("ReloadCoroutine");
+        gun.StopShootingCoroutine();
     }
     protected virtual RayCastProjectile CreateProjectile()
     {
         return Instantiate(projectilePrefab).GetComponent<RayCastProjectile>();
+        
     }
     private IEnumerator ReloadCoroutine()
     {
@@ -76,4 +84,12 @@ public class Shooter : MonoBehaviour
             StopCoroutine("ReloadCoroutine");
         }
     }
+    public void ChangeAmmo()
+    {
+        ammo = gun.maxAmmo;
+    }
+    public int getAmmo() { return ammo; }
+    
+       
+    
 }
